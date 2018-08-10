@@ -6,7 +6,7 @@
  * @version 1.0.0
  * @access private
  */
-class NP_List_Table {
+abstract class NP_List_Table {
 
 	/**
 	 * The current list of items.
@@ -16,25 +16,11 @@ class NP_List_Table {
 	public $items;
 
 	/**
-	 * Various information about the current table.
-	 *
-	 * @var array
-	 */
-	protected $_args;
-
-	/**
 	 * Various information needed for displaying the pagination.
 	 *
 	 * @var array
 	 */
 	protected $_pagination_args = array();
-
-	/**
-	 * The current screen.
-	 *
-	 * @var object
-	 */
-	protected $screen;
 
 	/**
 	 * Cached bulk actions.
@@ -49,14 +35,7 @@ class NP_List_Table {
 	 * @var string
 	 */
 	private $_pagination;
-
-	/**
-	 * The view switcher modes.
-	 *
-	 * @var array
-	 */
-	protected $modes = array();
-
+	
 	/**
 	 * Stores the value returned by ->get_column_info().
 	 *
@@ -64,65 +43,11 @@ class NP_List_Table {
 	 */
 	protected $_column_headers;
 
-	
-	/**
-	 * Constructor.
-	 *
-	 * The child class should call this constructor from its own constructor to override
-	 * the default $args.
-	 *
-	 *
-	 * @param array|string $args {
-	 *     Array or string of arguments.
-	 *
-	 *     @type string $plural   Plural value used for labels and the objects being listed.
-	 *                            This affects things such as CSS class-names and nonces used
-	 *                            in the list table, e.g. 'posts'. Default empty.
-	 *     @type string $singular Singular label for an object being listed, e.g. 'post'.
-	 *                            Default empty
-	 *     @type bool   $ajax     Whether the list table supports Ajax. This includes loading
-	 *                            and sorting data, for example. If true, the class will call
-	 *                            the _js_vars() method in the footer to provide variables
-	 *                            to any scripts handling Ajax events. Default false.
-	 *     @type string $screen   String containing the hook name used to determine the current
-	 *                            screen. If left null, the current screen will be automatically set.
-	 *                            Default null.
-	 * }
-	 */
-	public function __construct( $args = array() ) {
-		$args = wp_parse_args( $args, array(
-			'plural' => '',
-			'singular' => '',
-			'ajax' => false,
-			'screen' => null,
-		) );
-
-		$this->screen = convert_to_screen( $args['screen'] );
-
-		add_filter( "manage_{$this->screen->id}_columns", array( $this, 'get_columns' ), 0 );
-
-		if ( !$args['plural'] )
-			$args['plural'] = $this->screen->base;
-
-		$args['plural'] = sanitize_key( $args['plural'] );
-		$args['singular'] = sanitize_key( $args['singular'] );
-
-		$this->_args = $args;
-
-		if ( $args['ajax'] ) {
-			// wp_enqueue_script( 'list-table' );
-			add_action( 'admin_footer', array( $this, '_js_vars' ) );
-		}
-	}
-
-
 	/**
 	 * Prepares the list of items for displaying.
 	 * @abstract
 	 */
-	public function prepare_items() {
-		die( 'function WP_List_Table::prepare_items() must be over-ridden in a sub-class.' );
-	}
+	abstract function prepare_items();
 
 	/**
 	 * An internal method that sets all the necessary pagination arguments
@@ -239,7 +164,7 @@ class NP_List_Table {
 			 *
 			 * @param array $actions An array of the available bulk actions.
 			 */
-			$this->_actions = apply_filters( "bulk_actions-{$this->screen->id}", $this->_actions );
+			$this->_actions = apply_filters( "bulk_actions-post", $this->_actions );
 			$two = '';
 		} else {
 			$two = '2';
@@ -322,8 +247,6 @@ class NP_List_Table {
 		/**
 		 * Filters whether to remove the 'Months' drop-down from the post list table.
 		 *
-		 * @since 4.2.0
-		 *
 		 * @param bool   $disable   Whether to disable the drop-down. Default false.
 		 * @param string $post_type The post type.
 		 */
@@ -390,8 +313,6 @@ class NP_List_Table {
 	/**
 	 * Get the current page number
 	 *
-	 * @since 3.1.0
-	 *
 	 * @return int
 	 */
 	public function get_pagenum() {
@@ -405,8 +326,6 @@ class NP_List_Table {
 
 	/**
 	 * Get number of items to display on a single page
-	 *
-	 * @since 3.1.0
 	 *
 	 * @param string $option
 	 * @param int    $default
@@ -435,8 +354,6 @@ class NP_List_Table {
 
 	/**
 	 * Display the pagination.
-	 *
-	 * @since 3.1.0
 	 *
 	 * @param string $which
 	 */
@@ -559,15 +476,11 @@ class NP_List_Table {
 	/**
 	 * Get a list of columns. The format is:
 	 * 'internal-name' => 'Title'
-	 *
-	 * @since 3.1.0
 	 * @abstract
 	 *
 	 * @return array
 	 */
-	public function get_columns() {
-		die( 'function WP_List_Table::get_columns() must be over-ridden in a sub-class.' );
-	}
+	abstract function get_columns();
 
 	/**
 	 * Get a list of sortable columns. The format is:
@@ -576,8 +489,6 @@ class NP_List_Table {
 	 * 'internal-name' => array( 'orderby', true )
 	 *
 	 * The second format will make the initial sorting order be descending
-	 *
-	 * @since 3.1.0
 	 *
 	 * @return array
 	 */
@@ -617,8 +528,6 @@ class NP_List_Table {
 	/**
 	 * Public wrapper for WP_List_Table::get_default_primary_column_name().
 	 *
-	 * @since 4.4.0
-	 *
 	 * @return string Name of the default primary column.
 	 */
 	public function get_primary_column() {
@@ -628,12 +537,10 @@ class NP_List_Table {
 	/**
 	 * Gets the name of the primary column.
 	 *
-	 * @since 4.3.0
-	 *
 	 * @return string The name of the primary column.
 	 */
 	protected function get_primary_column_name() {
-		$columns = get_column_headers( $this->screen );
+		$columns = $this->get_columns();
 		$default = $this->get_default_primary_column_name();
 
 		// If the primary column doesn't exist fall back to the
@@ -645,12 +552,10 @@ class NP_List_Table {
 		/**
 		 * Filters the name of the primary column for the current list table.
 		 *
-		 * @since 4.3.0
-		 *
 		 * @param string $default Column name default for the specific list table, e.g. 'name'.
 		 * @param string $context Screen ID for specific list table, e.g. 'plugins'.
 		 */
-		$column  = apply_filters( 'list_table_primary_column', $default, $this->screen->id );
+		$column  = $default;
 
 		if ( empty( $column ) || ! isset( $columns[ $column ] ) ) {
 			$column = $default;
@@ -661,8 +566,6 @@ class NP_List_Table {
 
 	/**
 	 * Get a list of all, hidden and sortable columns, with filter applied
-	 *
-	 * @since 3.1.0
 	 *
 	 * @return array
 	 */
@@ -679,21 +582,18 @@ class NP_List_Table {
 			return $column_headers;
 		}
 
-		$columns = get_column_headers( $this->screen );
-		$hidden = get_hidden_columns( $this->screen );
-
+		$columns = $this->get_columns();
 		$sortable_columns = $this->get_sortable_columns();
+		$hidden = array();
 		/**
 		 * Filters the list table sortable columns for a specific screen.
 		 *
 		 * The dynamic portion of the hook name, `$this->screen->id`, refers
 		 * to the ID of the current screen, usually a string.
 		 *
-		 * @since 3.5.0
-		 *
 		 * @param array $sortable_columns An array of sortable columns.
 		 */
-		$_sortable = apply_filters( "manage_{$this->screen->id}_sortable_columns", $sortable_columns );
+		$_sortable = $sortable_columns;
 
 		$sortable = array();
 		foreach ( $_sortable as $id => $data ) {
@@ -716,8 +616,6 @@ class NP_List_Table {
 	/**
 	 * Return number of visible columns
 	 *
-	 * @since 3.1.0
-	 *
 	 * @return int
 	 */
 	public function get_column_count() {
@@ -728,8 +626,6 @@ class NP_List_Table {
 
 	/**
 	 * Print column headers, accounting for hidden and sortable columns.
-	 *
-	 * @since 3.1.0
 	 *
 	 * @staticvar int $cb_counter
 	 *
@@ -760,8 +656,6 @@ class NP_List_Table {
 				. '<input id="cb-select-all-' . $cb_counter . '" type="checkbox" />';
 			$cb_counter++;
 		}
-
-		echo "<pre>"; print_r($this->get_column_info()); exit;
 
 		foreach ( $columns as $column_key => $column_display_name ) {
 			$class = array( 'manage-column', "column-$column_key" );
@@ -808,15 +702,10 @@ class NP_List_Table {
 
 	/**
 	 * Display the table
-	 *
-	 * @since 3.1.0
 	 */
 	public function display() {
-		$singular = $this->_args['singular'];
-
+		
 		$this->display_tablenav( 'top' );
-
-		$this->screen->render_screen_reader_content( 'heading_list' );
 ?>
 <table class="wp-list-table <?php echo implode( ' ', $this->get_table_classes() ); ?>">
 	<thead>
@@ -825,10 +714,7 @@ class NP_List_Table {
 	</tr>
 	</thead>
 
-	<tbody id="the-list"<?php
-		if ( $singular ) {
-			echo " data-wp-lists='list:$singular'";
-		} ?>>
+	<tbody id="the-list">
 		<?php $this->display_rows_or_placeholder(); ?>
 	</tbody>
 
@@ -846,8 +732,6 @@ class NP_List_Table {
 	/**
 	 * Get a list of CSS classes for the WP_List_Table table tag.
 	 *
-	 * @since 3.1.0
-	 *
 	 * @return array List of CSS classes for the table tag.
 	 */
 	protected function get_table_classes() {
@@ -856,15 +740,10 @@ class NP_List_Table {
 
 	/**
 	 * Generate the table navigation above or below the table
-	 *
-	 * @since 3.1.0
 	 * @param string $which
 	 */
 	protected function display_tablenav( $which ) {
-		if ( 'top' === $which ) {
-			wp_nonce_field( 'bulk-' . $this->_args['plural'] );
-		}
-		?>
+?>
 	<div class="tablenav <?php echo esc_attr( $which ); ?>">
 
 		<?php if ( $this->has_items() ): ?>
@@ -884,16 +763,12 @@ class NP_List_Table {
 	/**
 	 * Extra controls to be displayed between bulk actions and pagination
 	 *
-	 * @since 3.1.0
-	 *
 	 * @param string $which
 	 */
 	protected function extra_tablenav( $which ) {}
 
 	/**
 	 * Generate the tbody element for the list table.
-	 *
-	 * @since 3.1.0
 	 */
 	public function display_rows_or_placeholder() {
 		if ( $this->has_items() ) {
@@ -907,8 +782,6 @@ class NP_List_Table {
 
 	/**
 	 * Generate the table rows
-	 *
-	 * @since 3.1.0
 	 */
 	public function display_rows() {
 		foreach ( $this->items as $item )
@@ -917,8 +790,6 @@ class NP_List_Table {
 
 	/**
 	 * Generates content for a single row of the table
-	 *
-	 * @since 3.1.0
 	 *
 	 * @param object $item The current item
 	 */
@@ -943,8 +814,6 @@ class NP_List_Table {
 
 	/**
 	 * Generates the columns for a single row of the table
-	 *
-	 * @since 3.1.0
 	 *
 	 * @param object $item The current item
 	 */
@@ -996,8 +865,6 @@ class NP_List_Table {
 	/**
 	 * Generates and display row actions links for the list table.
 	 *
-	 * @since 4.3.0
-	 *
 	 * @param object $item        The item being acted upon.
 	 * @param string $column_name Current column name.
 	 * @param string $primary     Primary column name.
@@ -1009,8 +876,6 @@ class NP_List_Table {
 
 	/**
 	 * Handle an incoming ajax request (called from admin-ajax.php)
-	 *
-	 * @since 3.1.0
 	 */
 	public function ajax_response() {
 		$this->prepare_items();

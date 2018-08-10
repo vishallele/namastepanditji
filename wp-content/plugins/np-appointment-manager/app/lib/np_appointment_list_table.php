@@ -6,23 +6,7 @@ include 'np_table.php';
  * Core class used to implement displaying Appointments in a list table.
  *
  */
-class NP_Appointments_List_Table extends NP_List_Table {
-
-	/**
-	 * Whether the items should be displayed hierarchically or linearly.
-	 *
-	 * @since 3.1.0
-	 * @var bool
-	 */
-	protected $hierarchical_display;
-
-	/**
-	 * Holds the number of pending comments for each post.
-	 *
-	 * @since 3.1.0
-	 * @var array
-	 */
-	protected $comment_pending_count;
+class NP_Leads_List_Table extends NP_List_Table {
 
 	/**
 	 * Holds the number of posts for this user.
@@ -31,14 +15,6 @@ class NP_Appointments_List_Table extends NP_List_Table {
 	 * @var int
 	 */
 	private $user_posts_count;
-
-	/**
-	 * Holds the number of posts which are sticky.
-	 *
-	 * @since 3.1.0
-	 * @var int
-	 */
-	private $sticky_posts_count = 0;
 
 	private $is_trash;
 
@@ -53,24 +29,13 @@ class NP_Appointments_List_Table extends NP_List_Table {
 	/**
 	 * Constructor.
 	 *
-	 * @since 3.1.0
-	 *
-	 * @see WP_List_Table::__construct() for more information on default arguments.
-	 *
-	 * @global WP_Post_Type $post_type_object
-	 * @global wpdb         $wpdb
-	 *
 	 * @param array $args An associative array of arguments.
 	 */
 	public function __construct( $args = array() ) {
-		global $post_type_object, $wpdb;
 
-		parent::__construct( array(
-			'plural' => 'posts',
-			'screen' => isset( $args['screen'] ) ? $args['screen'] : null,
-		) );
+		global $wpdb;
 
-		$post_type        = $this->screen->post_type;
+		$post_type        = 'posts';
 		$post_type_object = get_post_type_object( $post_type );
 
 		$exclude_states   = get_post_stati( array(
@@ -87,22 +52,6 @@ class NP_Appointments_List_Table extends NP_List_Table {
 		if ( $this->user_posts_count && ! current_user_can( $post_type_object->cap->edit_others_posts ) && empty( $_REQUEST['post_status'] ) && empty( $_REQUEST['all_posts'] ) && empty( $_REQUEST['author'] ) && empty( $_REQUEST['show_sticky'] ) ) {
 			$_GET['author'] = get_current_user_id();
 		}
-
-		if ( 'post' === $post_type && $sticky_posts = get_option( 'sticky_posts' ) ) {
-			$sticky_posts = implode( ', ', array_map( 'absint', (array) $sticky_posts ) );
-			$this->sticky_posts_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT( 1 ) FROM $wpdb->posts WHERE post_type = %s AND post_status NOT IN ('trash', 'auto-draft') AND ID IN ($sticky_posts)", $post_type ) );
-		}
-	}
-
-	/**
-	 * Sets whether the table layout should be hierarchical or not.
-	 *
-	 * @since 4.2.0
-	 *
-	 * @param bool $display Whether the table layout should be hierarchical.
-	 */
-	public function set_hierarchical_display( $display ) {
-		$this->hierarchical_display = $display;
 	}
 
 	/**
@@ -121,51 +70,24 @@ class NP_Appointments_List_Table extends NP_List_Table {
 	 * @global string   $mode
 	 */
 	public function prepare_items() {
-		global $avail_post_stati, $wp_query, $per_page, $mode;
+
+		global $wpdb, $per_page;
 
 		// is going to call wp()
-		$avail_post_stati = wp_edit_posts_query();
+		$this->items = $wpdb->get_results(
+			'
+			SELECT id, email, subject, message, status
+			FROM '. $wpdb->prefix .'np_appointments_request
+			'
+		);
 
-		$this->set_hierarchical_display( is_post_type_hierarchical( $this->screen->post_type ) && 'menu_order title' === $wp_query->query['orderby'] );
+		$post_type = 'posts';
+		$per_page = 20;
 
-		$post_type = $this->screen->post_type;
-		$per_page = $this->get_items_per_page( 'edit_' . $post_type . '_per_page' );
-
-		/** This filter is documented in wp-admin/includes/post.php */
- 		$per_page = apply_filters( 'edit_posts_per_page', $per_page, $post_type );
-
-		if ( $this->hierarchical_display ) {
-			$total_items = $wp_query->post_count;
-		} elseif ( $wp_query->found_posts || $this->get_pagenum() === 1 ) {
-			$total_items = $wp_query->found_posts;
-		} else {
-			$post_counts = (array) wp_count_posts( $post_type, 'readable' );
-
-			if ( isset( $_REQUEST['post_status'] ) && in_array( $_REQUEST['post_status'] , $avail_post_stati ) ) {
-				$total_items = $post_counts[ $_REQUEST['post_status'] ];
-			} elseif ( isset( $_REQUEST['show_sticky'] ) && $_REQUEST['show_sticky'] ) {
-				$total_items = $this->sticky_posts_count;
-			} elseif ( isset( $_GET['author'] ) && $_GET['author'] == get_current_user_id() ) {
-				$total_items = $this->user_posts_count;
-			} else {
-				$total_items = array_sum( $post_counts );
-
-				// Subtract post types that are not included in the admin all list.
-				foreach ( get_post_stati( array( 'show_in_admin_all_list' => false ) ) as $state ) {
-					$total_items -= $post_counts[ $state ];
-				}
-			}
-		}
-
-		if ( ! empty( $_REQUEST['mode'] ) ) {
-			$mode = $_REQUEST['mode'] === 'excerpt' ? 'excerpt' : 'list';
-			set_user_setting( 'posts_list_mode', $mode );
-		} else {
-			$mode = get_user_setting( 'posts_list_mode', 'list' );
-		}
-
-		$this->is_trash = isset( $_REQUEST['post_status'] ) && $_REQUEST['post_status'] === 'trash';
-
+		if ( $this->items || $this->get_pagenum() === 1 ) {
+			$total_items = count($this->items);
+		} 
+	
 		$this->set_pagination_args( array(
 			'total_items' => $total_items,
 			'per_page' => $per_page
@@ -177,29 +99,9 @@ class NP_Appointments_List_Table extends NP_List_Table {
 	 * @return bool
 	 */
 	public function has_items() {
-		return have_posts();
+		return count($this->items) > 0  ? true : false;
 	}
 
-
-	/**
-	 * Determine if the current view is the "All" view.
-	 *
-	 * @since 4.2.0
-	 *
-	 * @return bool Whether the current view is the "All" view.
-	 */
-	protected function is_base_request() {
-		$vars = $_GET;
-		unset( $vars['paged'] );
-
-		if ( empty( $vars ) ) {
-			return true;
-		} elseif ( 1 === count( $vars ) && ! empty( $vars['post_type'] ) ) {
-			return $this->screen->post_type === $vars['post_type'];
-		}
-
-		return 1 === count( $vars ) && ! empty( $vars['mode'] );
-	}
 
 	/**
 	 * Helper to create links to edit.php with params.
@@ -334,32 +236,6 @@ class NP_Appointments_List_Table extends NP_List_Table {
 			$status_links[ $status_name ] = $this->get_edit_link( $status_args, $status_label, $class );
 		}
 
-		if ( ! empty( $this->sticky_posts_count ) ) {
-			$class = ! empty( $_REQUEST['show_sticky'] ) ? 'current' : '';
-
-			$sticky_args = array(
-				'post_type'	=> $post_type,
-				'show_sticky' => 1
-			);
-
-			$sticky_inner_html = sprintf(
-				_nx(
-					'Sticky <span class="count">(%s)</span>',
-					'Sticky <span class="count">(%s)</span>',
-					$this->sticky_posts_count,
-					'posts'
-				),
-				number_format_i18n( $this->sticky_posts_count )
-			);
-
-			$sticky_link = array(
-				'sticky' => $this->get_edit_link( $sticky_args, $sticky_inner_html, $class )
-			);
-
-			// Sticky comes after Publish, or if not listed, after All.
-			$split = 1 + array_search( ( isset( $status_links['publish'] ) ? 'publish' : 'all' ), array_keys( $status_links ) );
-			$status_links = array_merge( array_slice( $status_links, 0, $split ), $sticky_link, array_slice( $status_links, $split ) );
-		}
 
 		return $status_links;
 	}
@@ -370,7 +246,7 @@ class NP_Appointments_List_Table extends NP_List_Table {
 	 */
 	protected function get_bulk_actions() {
 		$actions = array();
-		$post_type_obj = get_post_type_object( $this->screen->post_type );
+		$post_type_obj = get_post_type_object( 'post' );
 
 		if ( current_user_can( $post_type_obj->cap->edit_posts ) ) {
 			if ( $this->is_trash ) {
@@ -440,25 +316,8 @@ class NP_Appointments_List_Table extends NP_List_Table {
 		if ( 'top' === $which && !is_singular() ) {
 			ob_start();
 
-			$this->months_dropdown( $this->screen->post_type );
-			$this->categories_dropdown( $this->screen->post_type );
-
-			/**
-			 * Fires before the Filter button on the Posts and Pages list tables.
-			 *
-			 * The Filter button allows sorting by date and/or category on the
-			 * Posts list table, and sorting by date on the Pages list table.
-			 *
-			 * @since 2.1.0
-			 * @since 4.4.0 The `$post_type` parameter was added.
-			 * @since 4.6.0 The `$which` parameter was added.
-			 *
-			 * @param string $post_type The post type slug.
-			 * @param string $which     The location of the extra table nav markup:
-			 *                          'top' or 'bottom' for WP_Posts_List_Table,
-			 *                          'bar' for WP_Media_List_Table.
-			 */
-			do_action( 'restrict_manage_posts', $this->screen->post_type, $which );
+			$this->months_dropdown( 'posts' );
+			$this->categories_dropdown( 'posts' );
 
 			$output = ob_get_clean();
 
@@ -509,7 +368,7 @@ class NP_Appointments_List_Table extends NP_List_Table {
 	 * @return array
 	 */
 	public function get_columns() {
-		$post_type = $this->screen->post_type;
+		$post_type = 'posts';
 
 		$posts_columns = array();
 
@@ -618,11 +477,8 @@ class NP_Appointments_List_Table extends NP_List_Table {
 
 		add_filter( 'the_title', 'esc_html' );
 
-		if ( $this->hierarchical_display ) {
-			$this->_display_rows_hierarchical( $posts, $this->get_pagenum(), $per_page );
-		} else {
-			$this->_display_rows( $posts, $level );
-		}
+		$this->_display_rows( $posts, $level );
+
 	}
 
 	/**
@@ -640,103 +496,6 @@ class NP_Appointments_List_Table extends NP_List_Table {
 
 		foreach ( $posts as $post )
 			$this->single_row( $post, $level );
-	}
-
-	/**
-	 * @global wpdb    $wpdb
-	 * @global WP_Post $post
-	 * @param array $pages
-	 * @param int $pagenum
-	 * @param int $per_page
-	 */
-	private function _display_rows_hierarchical( $pages, $pagenum = 1, $per_page = 20 ) {
-		global $wpdb;
-
-		$level = 0;
-
-		if ( ! $pages ) {
-			$pages = get_pages( array( 'sort_column' => 'menu_order' ) );
-
-			if ( ! $pages )
-				return;
-		}
-
-		/*
-		 * Arrange pages into two parts: top level pages and children_pages
-		 * children_pages is two dimensional array, eg.
-		 * children_pages[10][] contains all sub-pages whose parent is 10.
-		 * It only takes O( N ) to arrange this and it takes O( 1 ) for subsequent lookup operations
-		 * If searching, ignore hierarchy and treat everything as top level
-		 */
-		if ( empty( $_REQUEST['s'] ) ) {
-
-			$top_level_pages = array();
-			$children_pages = array();
-
-			foreach ( $pages as $page ) {
-
-				// Catch and repair bad pages.
-				if ( $page->post_parent == $page->ID ) {
-					$page->post_parent = 0;
-					$wpdb->update( $wpdb->posts, array( 'post_parent' => 0 ), array( 'ID' => $page->ID ) );
-					clean_post_cache( $page );
-				}
-
-				if ( 0 == $page->post_parent )
-					$top_level_pages[] = $page;
-				else
-					$children_pages[ $page->post_parent ][] = $page;
-			}
-
-			$pages = &$top_level_pages;
-		}
-
-		$count = 0;
-		$start = ( $pagenum - 1 ) * $per_page;
-		$end = $start + $per_page;
-		$to_display = array();
-
-		foreach ( $pages as $page ) {
-			if ( $count >= $end )
-				break;
-
-			if ( $count >= $start ) {
-				$to_display[$page->ID] = $level;
-			}
-
-			$count++;
-
-			if ( isset( $children_pages ) )
-				$this->_page_rows( $children_pages, $count, $page->ID, $level + 1, $pagenum, $per_page, $to_display );
-		}
-
-		// If it is the last pagenum and there are orphaned pages, display them with paging as well.
-		if ( isset( $children_pages ) && $count < $end ){
-			foreach ( $children_pages as $orphans ){
-				foreach ( $orphans as $op ) {
-					if ( $count >= $end )
-						break;
-
-					if ( $count >= $start ) {
-						$to_display[$op->ID] = 0;
-					}
-
-					$count++;
-				}
-			}
-		}
-
-		$ids = array_keys( $to_display );
-		_prime_post_caches( $ids );
-
-		if ( ! isset( $GLOBALS['post'] ) ) {
-			$GLOBALS['post'] = reset( $ids );
-		}
-
-		foreach ( $to_display as $page_id => $level ) {
-			echo "\t";
-			$this->single_row( $page_id, $level );
-		}
 	}
 
 	/**
@@ -854,27 +613,6 @@ class NP_Appointments_List_Table extends NP_List_Table {
 	public function column_title( $post ) {
 		global $mode;
 
-		if ( $this->hierarchical_display ) {
-			if ( 0 === $this->current_level && (int) $post->post_parent > 0 ) {
-				// Sent level 0 by accident, by default, or because we don't know the actual level.
-				$find_main_page = (int) $post->post_parent;
-				while ( $find_main_page > 0 ) {
-					$parent = get_post( $find_main_page );
-
-					if ( is_null( $parent ) ) {
-						break;
-					}
-
-					$this->current_level++;
-					$find_main_page = (int) $parent->post_parent;
-
-					if ( ! isset( $parent_name ) ) {
-						/** This filter is documented in wp-includes/post-template.php */
-						$parent_name = apply_filters( 'the_title', $parent->post_title, $parent->ID );
-					}
-				}
-			}
-		}
 
 		$can_edit_post = current_user_can( 'edit_post', $post->ID );
 
@@ -931,7 +669,7 @@ class NP_Appointments_List_Table extends NP_List_Table {
 		}
 		echo "</strong>\n";
 
-		if ( ! is_post_type_hierarchical( $this->screen->post_type ) && 'excerpt' === $mode && current_user_can( 'read_post', $post->ID ) ) {
+		if ( ! is_post_type_hierarchical( 'post' ) && 'excerpt' === $mode && current_user_can( 'read_post', $post->ID ) ) {
 			if ( post_password_required( $post ) ) {
 				echo '<span class="protected-post-excerpt">' . esc_html( get_the_excerpt() ) . '</span>';
 			} else {
