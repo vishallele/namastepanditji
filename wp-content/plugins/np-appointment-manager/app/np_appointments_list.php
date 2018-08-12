@@ -6,9 +6,8 @@
 ?>
 	<div class="wrap">
 <?php
+
 	$appointment_list->prepare_items();
-	
-	$appointment_list->search_box('Search Appointments','Search Appointments');
 
 	$appointment_list->display();
 	
