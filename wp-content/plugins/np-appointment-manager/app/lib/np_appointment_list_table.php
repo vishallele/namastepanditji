@@ -84,7 +84,7 @@ class NP_Leads_List_Table extends NP_List_Table {
 		$post_type = 'posts';
 		$per_page = 20;
 
-		if ( $this->items || $this->get_pagenum() === 1 ) {
+		if ( count( $this->items ) > 0 || $this->get_pagenum() === 1 ) {
 			$total_items = count($this->items);
 		} 
 	
