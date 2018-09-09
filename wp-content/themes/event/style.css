@@ -3600,18 +3600,22 @@ html[xmlns] .layer-slider .slides {
 
 .main-slider .flex-nav-prev a.flex-prev {
 	left: -50px;
+	display: none;
 }
 
 .main-slider .flex-nav-next a.flex-next {
 	right: -50px;
+	display: none;
 }
 
 .main-slider:hover a.flex-prev {
 	left: 20px;
+	display: none;
 }
 
 .main-slider:hover a.flex-next {
 	right: 20px;
+	display: none;
 }
 
 .main-slider .flex-direction-nav a:hover {
@@ -3663,6 +3667,20 @@ html[xmlns] .layer-slider .slides {
 	-ms-transition: background .3s ease;
   	transition: background .3s ease;
 }
+
+/*======================Custom CSS===============*/
+.rm-top-brdr {
+	border-top: none;
+}
+
+.feature-content .feature-img {
+	box-sizing: content-box;
+    display: block;
+    margin: 0 auto;
+    padding: 26px;
+    position: relative;
+}
+
 
 /* #bbpress
 ================================================== */

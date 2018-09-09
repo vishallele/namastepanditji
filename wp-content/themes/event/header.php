@@ -39,9 +39,10 @@ if($event_settings['event_header_image_display'] =='top'){
 			</div> <!-- end .container -->
 		</div> <!-- end .top-header -->
 		<?php 
-if($event_settings['event_header_image_display'] =='bottom'){
-	do_action('event_header_image');
-}?>
+
+		if($event_settings['event_header_image_display'] =='bottom'){
+			do_action('event_header_image');
+		}?>
 		<!-- Main Header============================================= -->
 				<div id="sticky-header" class="clearfix">
 					<div class="container clearfix">
@@ -82,28 +83,15 @@ if($event_settings['event_header_image_display'] =='bottom'){
 						<?php } ?>
 					</div> <!-- end .container -->
 				</div> <!-- end #sticky-header -->
-				<?php
-				$enable_slider = $event_settings['event_enable_slider'];
-						if ($enable_slider=='frontpage'|| $enable_slider=='enitresite'){
-							 if(is_front_page() && ($enable_slider=='frontpage') ) {
-								if($event_settings['event_slider_type'] == 'default_slider') {
-										event_sticky_post_sliders();
-								}else{
-									if(class_exists('Event_Plus_Features')):
-										do_action('event_image_sliders');
-									endif;
-								}
-							}
-							if($enable_slider=='enitresite'){
-								if($event_settings['event_slider_type'] == 'default_slider') {
-										event_sticky_post_sliders();
-								}else{
-									if(class_exists('Event_Plus_Features')):
-										do_action('event_image_sliders');
-									endif;
-								}
-							}
-						} ?>
+
+		<!--Home Page Slider---->		
+			<?php
+				if( is_front_page()) {
+					get_template_part('inc/page-components/slider','component');
+				}
+			?>
+		<!--End Home Page Slider---->
+
 </header> <!-- end #masthead -->
 <!-- Main Page Start ============================================= -->
 <div id="content">
@@ -124,7 +112,4 @@ if(!(is_front_page() || is_page_template('page-templates/event-corporate.php') )
 			<!-- .breadcrumb -->
 		</div>
 		<!-- .page-header -->
-<?php }
-if(is_page_template('upcoming-event-template.php') || is_page_template('program-schedule-template.php') ){
- 	echo '</div><!-- end .container -->';
-}
+<?php } ?>
