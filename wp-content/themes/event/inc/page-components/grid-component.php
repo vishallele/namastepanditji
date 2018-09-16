@@ -1,13 +1,14 @@
 <?php 
     $grids_data = CFS()->get('grids');
 
-    //echo "<pre>"; print_r($grids_data); exit;
+    //echo "<pre>"; print_r($grids_data); 
 
     if( count($grids_data) > 0 ) {
         
 ?>
 <div class="our-feature-box rm-top-brdr">
-    <div class="container">
+    <h2 class="widget-title">WHO I AM ?</h2>
+    <div class="container clearfix">
         <div class="column">
         <?php 
             foreach( $grids_data as $grid ) {
@@ -26,7 +27,9 @@
                             <h3 class="feature-title"><a href="#" title="" rel="bookmark"><?php echo $grid_title; ?></a></h3>
                             <p><?php echo $grid_content ?></p>
                         </article>
-                        <a title="<?php echo $grid_read_more_link['text']; ?>" href="<?php echo $grid_read_more_link['url']; ?>" target="<?php echo $grid_read_more_link['target']; ?>" class="more-link"><?php echo $grid_read_more_link['text']; ?></a>
+                        <?php if( $grid_read_more_link !== '' ) { ?>
+                            <a title="<?php echo $grid_read_more_link['text']; ?>" href="<?php echo $grid_read_more_link['url']; ?>" target="<?php echo $grid_read_more_link['target']; ?>" class="more-link"><?php echo $grid_read_more_link['text']; ?></a>
+                        <?php } ?>        
                     </div> <!-- end .feature-content -->
                 </div><!-- end .three-column -->
 

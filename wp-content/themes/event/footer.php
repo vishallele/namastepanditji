@@ -7,69 +7,24 @@
  * @since Event 1.0
  */
 $event_settings = event_get_theme_options();
-if(is_page_template('upcoming-event-template.php') || is_page_template('program-schedule-template.php') ){
- 	// Code is poetry
-}elseif(!is_page_template('page-templates/event-corporate.php') ){ ?>
+?>
 	</div> <!-- end .container -->
-<?php } ?>
 </div> <!-- end #content -->
 <!-- Footer Start ============================================= -->
 <footer id="colophon" class="site-footer clearfix">
-<?php
-$footer_column = $event_settings['event_footer_column_section'];
-	if( is_active_sidebar( 'event_footer_1' ) || is_active_sidebar( 'event_footer_2' ) || is_active_sidebar( 'event_footer_3' ) || is_active_sidebar( 'event_footer_4' )) { ?>
-	<div class="widget-wrap">
-		<div class="container">
-			<div class="widget-area clearfix">
-			<?php
-				if($footer_column == '1' || $footer_column == '2' ||  $footer_column == '3' || $footer_column == '4'){
-				echo '<div class="column-'.$footer_column.'">';
-					if ( is_active_sidebar( 'event_footer_1' ) ) :
-						dynamic_sidebar( 'event_footer_1' );
-					endif;
-				echo '</div><!-- end .column'.$footer_column. '  -->';
-				}
-				if($footer_column == '2' ||  $footer_column == '3' || $footer_column == '4'){
-				echo '<div class="column-'.$footer_column.'">';
-					if ( is_active_sidebar( 'event_footer_2' ) ) :
-						dynamic_sidebar( 'event_footer_2' );
-					endif;
-				echo '</div><!--end .column'.$footer_column.'  -->';
-				}
-				if($footer_column == '3' || $footer_column == '4'){
-				echo '<div class="column-'.$footer_column.'">';
-					if ( is_active_sidebar( 'event_footer_3' ) ) :
-						dynamic_sidebar( 'event_footer_3' );
-					endif;
-				echo '</div><!--end .column'.$footer_column.'  -->';
-				}
-				if($footer_column == '4'){
-				echo '<div class="column-'.$footer_column.'">';
-					if ( is_active_sidebar( 'event_footer_4' ) ) :
-						dynamic_sidebar( 'event_footer_4' );
-					endif;
-				echo '</div><!--end .column'.$footer_column.  '-->';
-				}
-				?>
-			</div> <!-- end .widget-area -->
-		</div> <!-- end .container -->
-	</div> <!-- end .widget-wrap -->
-	<?php }
-		if(class_exists('Event_Plus_Features')){
-			if(is_page_template('page-templates/event-corporate.php') ){
-				do_action('event_client_box');
-			}
-		} ?>
+<?php $footer_column = $event_settings['event_footer_column_section']; ?>
 <div class="site-info" <?php if($event_settings['event-img-upload-footer-image'] !=''){?>style="background-image:url('<?php echo esc_url($event_settings['event-img-upload-footer-image']); ?>');" <?php } ?>>
 	<div class="container">
+
+<div class="social-links clearfix">
+	<ul><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5"><a href="http://facebook.com"><span class="screen-reader-text">Facebook</span></a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-6"><a href="http://twitter.com"><span class="screen-reader-text">Twitter</span></a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-328"><a href="http://www.instagram.com"><span class="screen-reader-text">Instagram</span></a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-373"><a href="http://youtube.com"><span class="screen-reader-text">Youtube</span></a></li>
+</ul>	</div>
+
 	<?php
-		if($event_settings['event_buttom_social_icons'] == 0):
-			do_action('event_social_links');
-		endif;
-		if(class_exists('Event_Plus_Features')){
-			do_action('event_footer_menu');
-		}
-		
+		/////=======================================================================	
 		if ( is_active_sidebar( 'event_footer_options' ) ) :
 		dynamic_sidebar( 'event_footer_options' );
 		else:

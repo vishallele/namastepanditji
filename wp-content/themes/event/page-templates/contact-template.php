@@ -1,16 +1,10 @@
 <?php
 /**
- * Template Name: Contact Template
- *
- * Displays the contact page template.
- *
- * @package Theme Freesia
- * @subpackage Event
- * @since Event 1.0
+ * Template Name: Contact Page Template
  */
+
 get_header();
-	global $event_settings;
-	$event_settings = wp_parse_args(  get_option( 'event_theme_options', array() ),  event_get_option_defaults_values() );
+	$event_settings = event_get_theme_options();
 	global $event_content_layout;
 	if( $post ) {
 		$layout = get_post_meta( get_queried_object_id(), 'event_sidebarlayout', true );
@@ -29,31 +23,42 @@ get_header();
 	<?php }
 	}?>
 	<div id="main" class="clearfix">
-	<?php
+	<?php if( has_post_thumbnail() && $event_settings['event_display_page_featured_image']!=0) { ?>
+		<div class="post-image-content">
+			<figure class="post-featured-image">
+				<a href="<?php the_permalink();?>" title="<?php echo the_title_attribute('echo=0'); ?>">
+				<?php the_post_thumbnail(); ?>
+				</a>
+			</figure><!-- end.post-featured-image  -->
+		</div> <!-- end.post-image-content -->
+	<?php }
 	if( have_posts() ) {
 		while( have_posts() ) {
-			the_post();
-			if('' != get_the_content()) : ?>
-	<div class="googlemaps_widget">
-		<div class="maps-container">
-			<?php the_content(); ?>
-		</div>
-	</div> <!-- end .googlemaps_widget -->
-	<?php endif; ?>
+			the_post(); ?>
+	<section id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+		<article>
 		<div class="entry-content clearfix">
-		<?php if ( is_active_sidebar( 'event_form_for_contact_page' ) ) :
-			dynamic_sidebar( 'event_form_for_contact_page' );
-		endif; 
-		comments_template();
-			}
-		}
-		else { ?>
-		<h2 class="entry-title"> <?php esc_html_e( 'No Posts Found.', 'event' ); ?> </h2>
-		<?php
-		} ?>
-		</div> <!-- end #entry-content -->
-	</div> <!-- end #main -->
-	<?php  if( 'default' == $layout ) { //Settings from customizer
+			<?php the_content();
+				wp_link_pages( array( 
+				'before'            => '<div style="clear: both;"></div><div class="pagination clearfix">'.esc_html__( 'Pages:', 'event' ),
+				'after'             => '</div>',
+				'link_before'       => '<span>',
+				'link_after'        => '</span>',
+				'pagelink'          => '%',
+				'echo'              => 1
+				) ); ?>
+		</div> <!-- entry-content clearfix-->
+		<?php  comments_template(); ?>
+		</article>
+	</section>
+	<?php }
+	} else { ?>
+	<h1 class="entry-title"> <?php esc_html_e( 'No Posts Found.', 'event' ); ?> </h1>
+	<?php
+	} ?>
+	</div> <!-- #main -->
+	<?php 
+if( 'default' == $layout ) { //Settings from customizer
 	if(($event_settings['event_sidebar_layout_options'] != 'nosidebar') && ($event_settings['event_sidebar_layout_options'] != 'fullwidth')): ?>
 </div> <!-- #primary -->
 <?php endif;
@@ -61,28 +66,15 @@ get_header();
 	if(($layout != 'no-sidebar') && ($layout != 'full-width')){
 		echo '</div><!-- #primary -->';
 	} 
-}?>
-<?php 
-if( 'default' == $layout ) { //Settings from customizer
-	if(($event_settings['event_sidebar_layout_options'] != 'nosidebar') && ($event_settings['event_sidebar_layout_options'] != 'fullwidth')){ ?>
+}
+?>
 <div id="secondary">
-<?php }
-}else{ // for page/ post
-		if(($layout != 'no-sidebar') && ($layout != 'full-width')){ ?>
-<div id="secondary">
-	<?php }
-	}
-	if ( is_active_sidebar( 'event_contact_page_sidebar' ) ) :
-		dynamic_sidebar( 'event_contact_page_sidebar' );
-	endif;?>
-	<?php 
-	if( 'default' == $layout ) { //Settings from customizer
-		if(($event_settings['event_sidebar_layout_options'] != 'nosidebar') && ($event_settings['event_sidebar_layout_options'] != 'fullwidth')): ?>
-</div> <!-- #secondary -->
-<?php endif;
-	}else{ // for page/post
-		if(($layout != 'no-sidebar') && ($layout != 'full-width')){
-			echo '</div><!-- #secondary -->';
-		} 
-	}
+<?php
+if ( is_active_sidebar( 'event_contact_page_sidebar' ) ) :
+	dynamic_sidebar( 'event_contact_page_sidebar' );
+endif; ?>
+
+</div>
+
+<?php
 get_footer();

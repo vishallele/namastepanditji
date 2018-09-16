@@ -13,8 +13,6 @@
 $event_settings = event_get_theme_options(); ?>
 <head>
 <meta charset="<?php bloginfo( 'charset' ); ?>" />
-<link rel="profile" href="http://gmpg.org/xfn/11" />
-<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
 <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
@@ -73,13 +71,6 @@ if($event_settings['event_header_image_display'] =='top'){
 							</button><!-- end .menu-toggle -->
 							<?php	wp_page_menu(array('menu_class' => 'menu', 'items_wrap'     => '<ul id="primary-menu" class="menu nav-menu">%3$s</ul>')); ?>
 						</nav> <!-- end #site-navigation -->
-						<?php }
-						$search_form = $event_settings['event_search_custom_header'];
-						if (1 != $search_form) { ?>
-							<div id="search-toggle" class="header-search"></div>
-							<div id="search-box" class="clearfix">
-								<?php get_search_form();?>
-							</div>  <!-- end #search-box -->
 						<?php } ?>
 					</div> <!-- end .container -->
 				</div> <!-- end #sticky-header -->

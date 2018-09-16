@@ -1374,6 +1374,15 @@ img#wpstats {
 	color: #FFF;
 }
 
+.social-links ul li a[href*="youtube.com"]:before {
+	content: '\f16a';
+}
+
+.social-links ul li a[href*="youtube.com"]:hover {
+    background-color: #DE1A2A;
+    color: #FFF;
+}
+
 
 /* 17.0 Navigation
 ================================================== */
@@ -2527,7 +2536,7 @@ input.search-field {
 	background-color: #fff;
 	border-top: 1px solid rgba(0, 0, 0, 0.1);
 	margin-bottom: 0;
-	padding: 60px 0 20px;
+	padding: 0px 0 20px;
 	position: relative;
 	text-align: center;
 }
@@ -3669,6 +3678,13 @@ html[xmlns] .layer-slider .slides {
 }
 
 /*======================Custom CSS===============*/
+
+.col-md-6 {
+	width: 50%;
+	float: left;
+	padding: 0 20px 0px 0px;
+}
+
 .rm-top-brdr {
 	border-top: none;
 }

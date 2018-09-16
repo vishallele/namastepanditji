@@ -8,14 +8,18 @@
  */
 
 get_header(); ?>
-<div id="content">
+
     <div id="main" class="clearfix">
         <?php
+
             get_template_part('inc/page-components/grid','component');
+
+            get_template_part('inc/page-components/service','component');
+
         ?>
 	</div> <!-- #main -->
 
-</div> <!-- #primary -->
+
 
 <?php
     get_footer();
