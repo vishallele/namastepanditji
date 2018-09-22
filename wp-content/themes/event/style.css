@@ -944,13 +944,13 @@ input[type=search] {
 }
 
 #site-title a {
-	color: #333;
+	color: #fff;
 	display: block;
 }
 
 #site-description {
 	clear: both;
-	color: #333;
+	color: #fff;
 	font-family: "Roboto Condensed",sans-serif;
 	font-size: 11px;
 	font-weight: 700;
@@ -1229,14 +1229,14 @@ img#wpstats {
 }
 
 #sticky-header {
-	background-color: #fff;
+	background-color: #FFC300;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 	width: 100%;
   	z-index: 999;
 }
 
 .is-sticky #sticky-header {
-	background-color: rgba(255, 255, 255, 0.7);
+	background-color: rgba(255, 195, 0, 0.9);
 	-webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 	-moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
@@ -1407,7 +1407,7 @@ img#wpstats {
 }
 
 .main-navigation a {
-	color: #333;
+	color: #fff;
 	display: block;
 	font-family: "Roboto Condensed", sans-serif;
 	font-size: 12px;
@@ -1661,7 +1661,7 @@ img#wpstats {
 
 .entry-title,
 .entry-title a {
-	color: #333;
+	color: #dc143c;
 }
 
 .entry-title a:hover,
@@ -2294,9 +2294,9 @@ label ~ span.required {
 }
 
 .page-title {
-	color: #333;
+	color: #dc143c;
 	float: left;
-	font-size: 24px;
+	font-size: 30px;
 	line-height: 1.333;
 	margin: 0;
 	max-width: 70%;
@@ -2348,7 +2348,7 @@ input[type="checkbox"] {
 
 .widget-title,
 .widget-title a {
-	color:#333;
+	color:#dc143c;
 }
 
 .widget-title a:hover {
@@ -2357,8 +2357,8 @@ input[type="checkbox"] {
 
 #secondary .widget-title {
 	background-clip: content-box;
-	background-color: #0d1d31;
-	border: 1px solid #0d1d31;
+	background-color: #FFC300;
+	border: 1px solid #fff;
 	color: #fff;
 	font-family: "Roboto Condensed", sans-serif;
 	font-size: 16px;
@@ -2594,7 +2594,7 @@ input.search-field {
 }
 
 .our-feature-box .feature-title a {
-	color: #545454;
+	color: #dc143c;
 	font-weight: 400;
 }
 
@@ -3696,7 +3696,6 @@ html[xmlns] .layer-slider .slides {
     padding: 26px;
     position: relative;
 }
-
 
 /* #bbpress
 ================================================== */

@@ -5,7 +5,7 @@
         
 ?>
 <div class="our-feature-box rm-top-brdr">
-    <h2 class="widget-title">Services</h2>
+    <h2 class="widget-title"><span>Services</span></h2>
     <div class="container clearfix">
         <div class="column clearfix">
         <?php 

@@ -17,10 +17,10 @@ $event_settings = event_get_theme_options();
 	<div class="container">
 
 <div class="social-links clearfix">
-	<ul><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5"><a href="http://facebook.com"><span class="screen-reader-text">Facebook</span></a></li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-6"><a href="http://twitter.com"><span class="screen-reader-text">Twitter</span></a></li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-328"><a href="http://www.instagram.com"><span class="screen-reader-text">Instagram</span></a></li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-373"><a href="http://youtube.com"><span class="screen-reader-text">Youtube</span></a></li>
+	<ul><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5"><a href="http://facebook.com" target="_blank"><span class="screen-reader-text">Facebook</span></a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-6"><a href="http://twitter.com" target="_blank"><span class="screen-reader-text">Twitter</span></a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-328"><a href="http://www.instagram.com" target="_blank"><span class="screen-reader-text">Instagram</span></a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-373"><a href="http://youtube.com" target="_blank"><span class="screen-reader-text">Youtube</span></a></li>
 </ul>	</div>
 
 	<?php
@@ -29,9 +29,7 @@ $event_settings = event_get_theme_options();
 		dynamic_sidebar( 'event_footer_options' );
 		else:
 			echo '<div class="copyright">' .'&copy; ' . date('Y') .' '; ?>
-			<a title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" target="_blank" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo get_bloginfo( 'name', 'display' ); ?></a> | 
-						<?php esc_html_e('Designed by:','event'); ?> <a title="<?php echo esc_attr__( 'Theme Freesia', 'event' ); ?>" target="_blank" href="<?php echo esc_url( 'https://themefreesia.com' ); ?>"><?php esc_html_e('Theme Freesia','event');?></a> | 
-						<?php esc_html_e('Powered by:','event'); ?> <a title="<?php echo esc_attr__( 'WordPress', 'event' );?>" target="_blank" href="<?php echo esc_url( 'https://wordpress.org' );?>"><?php esc_html_e('WordPress','event'); ?></a>
+			<a title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" target="_blank" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo get_bloginfo( 'name', 'display' ); ?></a>
 					</div>
 		<?php endif;?>
 			<div style="clear:both;"></div>
